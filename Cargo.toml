@@ -1,5 +1,5 @@
 [package]
-name = "MerkleTree"
+name = "merkle_tree"
 version = "0.1.0"
 authors = ["Vladislav Lanskikh <nothingnesstobe@gmail.com>"]
 readme = "README.md"
@@ -11,6 +11,7 @@ name="merkle_tree"
 rust-crypto = "^0.2"
 bincode = "0.5.6"
 rustc-serialize = "0.3.19"
+rand = "0.3.14"
 
 clippy = {version = "*", optional = true}
 
