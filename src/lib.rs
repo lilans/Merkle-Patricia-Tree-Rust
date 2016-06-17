@@ -8,6 +8,7 @@ extern crate crypto;
 
 pub mod merkle_tree;
 
+//public functions test
 #[cfg(test)]
 mod tests {
     extern crate rand;
