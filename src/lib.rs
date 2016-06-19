@@ -39,12 +39,12 @@ mod tests {
     fn insert_test() {
         let mut new_tree = MerklePatriciaTree::new();
 
-        new_tree.insert(b"q", 1);
-        new_tree.insert(b"qw", 2);
-        new_tree.insert(b"qwe", 3);
-        new_tree.insert(b"qwer", 4);
-        new_tree.insert(b"qwert", 5);
-        new_tree.insert(b"qwerty", 6);
+        new_tree.insert(b"q", Some(1));
+        new_tree.insert(b"qw", Some(2));
+        new_tree.insert(b"qwe", Some(3));
+        new_tree.insert(b"qwer", Some(4));
+        new_tree.insert(b"qwert", Some(5));
+        new_tree.insert(b"qwerty", Some(6));
 
         assert_eq!(new_tree.get(b"q"), Some(&1));
         assert_eq!(new_tree.get(b"qw"), Some(&2));
@@ -59,8 +59,8 @@ mod tests {
     fn exists_value() {
         let mut new_tree = MerklePatriciaTree::new();
 
-        new_tree.insert(b"exist", 1);
-        new_tree.insert(b"exist", 2);
+        new_tree.insert(b"exist", Some(1));
+        new_tree.insert(b"exist", Some(2));
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
         let mut new_tree = MerklePatriciaTree::new();
 
         for (key, &value) in random_map.iter() {
-            new_tree.insert(key.as_bytes(), value)
+            new_tree.insert(key.as_bytes(), Some(value))
         }
 
         for (key, &value) in random_map.iter() {
@@ -81,12 +81,12 @@ mod tests {
     fn remove_test() {
         let mut new_tree = MerklePatriciaTree::new();
 
-        new_tree.insert(b"q", 1);
-        new_tree.insert(b"qw", 2);
-        new_tree.insert(b"qwe", 3);
-        new_tree.insert(b"qwer", 4);
-        new_tree.insert(b"qwert", 5);
-        new_tree.insert(b"qwerty", 6);
+        new_tree.insert(b"q", Some(1));
+        new_tree.insert(b"qw", Some(2));
+        new_tree.insert(b"qwe", Some(3));
+        new_tree.insert(b"qwer", Some(4));
+        new_tree.insert(b"qwert", Some(5));
+        new_tree.insert(b"qwerty", Some(6));
 
         assert_eq!(new_tree.remove(b"q"), Some(1));
         assert_eq!(new_tree.remove(b"qw"), Some(2));
@@ -110,7 +110,7 @@ mod tests {
         let mut new_tree = MerklePatriciaTree::new();
 
         for (key, &value) in random_map.iter() {
-            new_tree.insert(key.as_bytes(), value)
+            new_tree.insert(key.as_bytes(), Some(value))
         }
 
         for (key, &value) in random_map.iter() {
