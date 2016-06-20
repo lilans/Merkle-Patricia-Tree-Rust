@@ -1,3 +1,4 @@
+#![feature(test)]
 #![cfg_attr(feature = "dev", allow(unstable_features))]
 #![cfg_attr(feature = "dev", feature(plugin))]
 #![cfg_attr(feature = "dev", plugin(clippy))]
@@ -8,22 +9,25 @@ extern crate crypto;
 
 pub mod merkle_tree;
 
+
 //public functions test
 #[cfg(test)]
 mod tests {
+    extern crate test;
     extern crate rand;
+
 
     use merkle_tree::Merkle;
     use merkle_tree::MerklePatriciaTree;
-    use std::collections::HashMap;
     use self::rand::Rng;
+    use std::collections::HashMap;
+    use self::test::Bencher;
 
-
-    fn random_data() -> HashMap<String, u32> {
+    fn random_data(count: u32) -> HashMap<String, u32> {
         let mut index: u32 = 0;
         let mut map: HashMap<String, u32> = HashMap::<String, u32>::new();
 
-        while index < 1000 {
+        while index < count {
             let rstr: String = rand::thread_rng()
                 .gen_ascii_chars()
                 .take(32)
@@ -34,6 +38,149 @@ mod tests {
         }
         map
     }
+
+    #[bench]
+    fn insert_random_bench_1(b: &mut Bencher) {
+        b.iter(|| {
+            let random_map = random_data(1);
+            let mut new_tree = MerklePatriciaTree::new();
+
+            for (key, &value) in random_map.iter() {
+                new_tree.insert(key.as_bytes(), Some(value));
+            }
+        });
+    }
+
+    #[bench]
+    fn insert_random_bench_10(b: &mut Bencher) {
+        b.iter(|| {
+            let random_map = random_data(10);
+            let mut new_tree = MerklePatriciaTree::new();
+
+            for (key, &value) in random_map.iter() {
+                new_tree.insert(key.as_bytes(), Some(value));
+            }
+        });
+    }
+
+    #[bench]
+    fn insert_random_bench_100(b: &mut Bencher) {
+        b.iter(|| {
+            let random_map = random_data(100);
+            let mut new_tree = MerklePatriciaTree::new();
+
+            for (key, &value) in random_map.iter() {
+                new_tree.insert(key.as_bytes(), Some(value));
+            }
+        });
+    }
+
+
+    #[bench]
+    fn insert_random_bench_1000(b: &mut Bencher) {
+        b.iter(|| {
+            let random_map = random_data(1000);
+            let mut new_tree = MerklePatriciaTree::new();
+
+            for (key, &value) in random_map.iter() {
+                new_tree.insert(key.as_bytes(), Some(value));
+            }
+        });
+    }
+
+
+    #[bench]
+    fn insert_random_bench_10000(b: &mut Bencher) {
+        b.iter(|| {
+            let random_map = random_data(10000);
+            let mut new_tree = MerklePatriciaTree::new();
+
+            for (key, &value) in random_map.iter() {
+                new_tree.insert(key.as_bytes(), Some(value));
+            }
+        });
+    }
+
+    #[bench]
+    fn remove_random_bench_1(b:  &mut Bencher) {
+        let random_map = random_data(1);
+        let mut new_tree = MerklePatriciaTree::new();
+
+        for (key, &value) in random_map.iter() {
+            new_tree.insert(key.as_bytes(), Some(value));
+        }
+
+        b.iter(|| {
+            for (key, &value) in random_map.iter() {
+                new_tree.remove(&key.as_bytes());
+            }
+        });
+    }
+
+    #[bench]
+    fn remove_random_bench_10(b:  &mut Bencher) {
+        let random_map = random_data(10);
+        let mut new_tree = MerklePatriciaTree::new();
+
+        for (key, &value) in random_map.iter() {
+            new_tree.insert(key.as_bytes(), Some(value));
+        }
+
+        b.iter(|| {
+            for (key, &value) in random_map.iter() {
+                new_tree.remove(&key.as_bytes());
+            }
+        });
+    }
+
+    #[bench]
+    fn remove_random_bench_100(b:  &mut Bencher) {
+        let random_map = random_data(100);
+        let mut new_tree = MerklePatriciaTree::new();
+
+        for (key, &value) in random_map.iter() {
+            new_tree.insert(key.as_bytes(), Some(value));
+        }
+
+        b.iter(|| {
+            for (key, &value) in random_map.iter() {
+                new_tree.remove(&key.as_bytes());
+            }
+        });
+    }
+
+    #[bench]
+    fn remove_random_bench_1000(b:  &mut Bencher) {
+        let random_map = random_data(1000);
+        let mut new_tree = MerklePatriciaTree::new();
+
+        for (key, &value) in random_map.iter() {
+            new_tree.insert(key.as_bytes(), Some(value));
+        }
+
+        b.iter(|| {
+            for (key, &value) in random_map.iter() {
+                new_tree.remove(&key.as_bytes());
+            }
+        });
+    }
+
+    #[bench]
+    fn remove_random_bench_10000(b:  &mut Bencher) {
+        let random_map = random_data(10000);
+        let mut new_tree = MerklePatriciaTree::new();
+
+        for (key, &value) in random_map.iter() {
+            new_tree.insert(key.as_bytes(), Some(value));
+        }
+
+        b.iter(|| {
+            for (key, &value) in random_map.iter() {
+                new_tree.remove(&key.as_bytes());
+            }
+        });
+    }
+
 
     #[test]
     fn insert_test() {
@@ -65,7 +212,7 @@ mod tests {
 
     #[test]
     fn random_insert_test() {
-        let random_map = random_data();
+        let random_map = random_data(100);
         let mut new_tree = MerklePatriciaTree::new();
 
         for (key, &value) in random_map.iter() {
@@ -106,7 +253,7 @@ mod tests {
 
     #[test]
     fn remove_random_test() {
-        let random_map = random_data();
+        let random_map = random_data(100);
         let mut new_tree = MerklePatriciaTree::new();
 
         for (key, &value) in random_map.iter() {

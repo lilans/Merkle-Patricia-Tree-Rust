@@ -32,7 +32,6 @@ pub trait Merkle<'a, T: 'a> where T: Encodable {
     fn remove(&mut self, key: &'a [u8]) -> Option<T>;
 }
 
-#[derive(Debug)]
 pub struct MerklePatriciaTree<T> where T: Encodable {
     value: Option<T>,
     key: Vec<u8>,
@@ -267,11 +266,11 @@ impl<'a, T> PartialEq for MerklePatriciaTree<T>
 impl<'a, T> Eq for MerklePatriciaTree<T> where T: Clone + Encodable {}
 
 //private functions test
+
 #[cfg(test)]
 mod tests {
     extern crate rand;
 
-    use std::rc::Rc;
     use merkle_tree::Merkle;
     use merkle_tree::MerklePatriciaTree;
     use std::collections::HashMap;
