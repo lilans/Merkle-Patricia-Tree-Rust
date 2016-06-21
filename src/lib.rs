@@ -10,7 +10,7 @@ extern crate crypto;
 pub mod merkle_tree;
 
 
-//public functions test
+// public functions test
 #[cfg(test)]
 mod tests {
     extern crate test;
@@ -102,7 +102,7 @@ mod tests {
     }
 
     #[bench]
-    fn remove_random_bench_1(b:  &mut Bencher) {
+    fn remove_random_bench_1(b: &mut Bencher) {
         let random_map = random_data(1);
         let mut new_tree = MerklePatriciaTree::new();
 
@@ -118,7 +118,7 @@ mod tests {
     }
 
     #[bench]
-    fn remove_random_bench_10(b:  &mut Bencher) {
+    fn remove_random_bench_10(b: &mut Bencher) {
         let random_map = random_data(10);
         let mut new_tree = MerklePatriciaTree::new();
 
@@ -134,7 +134,7 @@ mod tests {
     }
 
     #[bench]
-    fn remove_random_bench_100(b:  &mut Bencher) {
+    fn remove_random_bench_100(b: &mut Bencher) {
         let random_map = random_data(100);
         let mut new_tree = MerklePatriciaTree::new();
 
@@ -150,7 +150,7 @@ mod tests {
     }
 
     #[bench]
-    fn remove_random_bench_1000(b:  &mut Bencher) {
+    fn remove_random_bench_1000(b: &mut Bencher) {
         let random_map = random_data(1000);
         let mut new_tree = MerklePatriciaTree::new();
 
@@ -166,7 +166,7 @@ mod tests {
     }
 
     #[bench]
-    fn remove_random_bench_10000(b:  &mut Bencher) {
+    fn remove_random_bench_10000(b: &mut Bencher) {
         let random_map = random_data(10000);
         let mut new_tree = MerklePatriciaTree::new();
 
