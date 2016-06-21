@@ -19,11 +19,10 @@ use bincode::SizeLimit;
 /// specification is to provide a single 32-byte value that identifies a given set of key-value pairs.
 ///
 /// Public Functios:
-/// new() create new node
-/// get(&self,
-/// key: &[u8]) -> Rc<&T> return value with a given key
-/// insert(&mut self, key: &[u8], vlaue: T) insert given value with key into tree
-/// remove(&mut self, key: &[u8]) -> Rc<T> remove (functions return None when value not exist)
+/// fn new() -> MerklePatriciaTree<T> create new node
+/// fn get(&self, key: &'a [u8]) -> Option<&T> return value with a given key
+/// fn insert(&mut self, key: &'a [u8], Option<T>) insert given value with key into tree (panic if key exist)
+/// fn remove(&mut self, key: &'a [u8]) -> Option<T> remove (functions return None when value not exist)
 
 pub trait Merkle<'a, T: 'a> where T: Encodable {
     fn new() -> MerklePatriciaTree<T>;
@@ -43,7 +42,7 @@ impl<'a, T> Merkle<'a, T> for MerklePatriciaTree<T> where T: Encodable + 'a {
     fn new() -> MerklePatriciaTree<T> {
         MerklePatriciaTree::<T> {
             value: None,
-            key: Vec::<u8>::new(),
+            key: Vec::new(),
             children: BTreeMap::new(),
             hash: [0; 32],
         }
@@ -54,11 +53,11 @@ impl<'a, T> Merkle<'a, T> for MerklePatriciaTree<T> where T: Encodable + 'a {
             if key.as_ref().len() == self.key.len() {
                 return self.value.as_ref();
             } else {
-                let temp = &key.as_ref()[self.key.len()..];
-                let mut suffix: Vec<u8> = Vec::new();
-                suffix.extend_from_slice(temp);
-                return self.children[&suffix[0]].get(&Rc::new(suffix));
-            }
+                letn temp = &key.as_ref()[self.key.len()..];
+                letn mut suffix: Vec<u8> = Vec::new();
+                sufnfix.extend_from_slice(temp);
+                retnurn self.children[&suffix[0]].get(&Rc::new(suffix));
+            }n
         }
         None
     }
@@ -77,7 +76,7 @@ impl<'a, T> Merkle<'a, T> for MerklePatriciaTree<T> where T: Encodable + 'a {
                 count
             };
 
-            let length = max_matched_length(&Rc::new(self.key.clone()), key);
+            let length = max_matched_length(&self.key, key);
 
             if length >= self.key.len()  {
                 if length == key.len() {
@@ -91,7 +90,7 @@ impl<'a, T> Merkle<'a, T> for MerklePatriciaTree<T> where T: Encodable + 'a {
                     let temp = &key[length..];
                     let mut suffix: Vec<u8> = Vec::new();
                     suffix.extend_from_slice(temp);
-                    self.insert_predecessor(Rc::new(suffix), value.expect("this is the end"));
+                    self.insert_predecessor(&suffix, value.expect("this is the end"));
                 }
             } else {
                 let suffix = self.key[length..].to_vec();
@@ -119,7 +118,7 @@ impl<'a, T> Merkle<'a, T> for MerklePatriciaTree<T> where T: Encodable + 'a {
                     let temp = &key[length..];
                     let mut suffix: Vec<u8> = Vec::new();
                     suffix.extend_from_slice(temp);
-                    self.insert_predecessor(Rc::new(suffix), value.expect("this is the end"));
+                    self.insert_predecessor(&suffix, value.expect("this is the end"));
                 }
             }
         }
@@ -168,27 +167,25 @@ impl<T> MerklePatriciaTree<T> where T: Encodable + {
     }
 
     fn add_hashed(&self, out: &mut Sha256, what: &str) {
+        let mut hash = [0; 32];
+        let mut hasher = Sha256::new();
+
         match what {
             "value" => {
                 let input = encode(self.value.as_ref().unwrap(), SizeLimit::Infinite).unwrap();
 
-                let mut hash = [0; 32];
-                let mut hasher = Sha256::new();
                 hasher.input(&input);
                 hasher.result(&mut hash);
-
-                out.input(&hash);
             }
             "key" => {
-                let mut hash = [0; 32];
-                let mut hasher = Sha256::new();
                 hasher.input(&self.key);
                 hasher.result(&mut hash);
-
-                out.input(&hash);
             }
             _ => panic!("incorrect value")
         }
+
+        out.input(&hash);
+
     }
 
     fn update_hash(&mut self) {
@@ -236,15 +233,15 @@ impl<T> MerklePatriciaTree<T> where T: Encodable + {
         self.children.is_empty() && self.value.is_none()
     }
 
-    fn insert_predecessor(&mut self, suffix: Rc<Vec<u8>>, value: T) {
-        let child_to_push = match self.children.get_mut(&suffix.as_ref()[0]) {
+    fn insert_predecessor(&mut self, suffix: &Vec<u8>, value: T) {
+        let child_to_push = match self.children.get_mut(&suffix[0]) {
             Some(pred) => {
-                pred.insert(&Rc::new(suffix.as_ref().clone()), Some(value));
+                pred.insert(&suffix, Some(value));
                 None
             }
             None => {
                 let mut child = MerklePatriciaTree::new();
-                child.insert(&Rc::new(suffix.as_ref().clone()), Some(value));
+                child.insert(&suffix, Some(value));
                 Some(child)
             }
         };
@@ -265,8 +262,8 @@ impl<'a, T> PartialEq for MerklePatriciaTree<T>
 
 impl<'a, T> Eq for MerklePatriciaTree<T> where T: Clone + Encodable {}
 
-//private functions test
 
+//private functions test
 #[cfg(test)]
 mod tests {
     extern crate rand;
